@@ -1,30 +1,36 @@
 # 0s will be placeholders for empty slots
 board = [
-    [7,8,0,4,0,0,1,2,0],
-    [6,0,0,0,7,5,0,0,9],
-    [0,0,0,6,0,1,0,7,8],
-    [0,0,7,0,4,0,2,6,0],
-    [0,0,1,0,5,0,9,3,0],
-    [9,0,4,0,6,0,0,0,5],
-    [0,7,0,3,0,0,0,1,2],
-    [1,2,0,0,0,7,4,0,0],
-    [0,4,9,2,0,6,0,0,7]
+    [9,0,0,0,0,8,0,6,1],
+    [4,0,0,0,0,5,8,0,0],
+    [8,0,0,6,1,7,0,0,0],
+
+    [0,4,0,7,0,0,1,0,0],
+    [0,0,9,0,6,0,4,0,3],
+    [0,0,0,5,0,0,0,7,0],
+
+    [0,0,0,0,4,0,0,1,6],
+    [3,0,0,0,0,0,0,0,5],
+    [0,7,0,2,5,0,3,8,0]
 ]
 
 
 def solve(bo):
+    # base case
     find = find_empty(bo)
+    # if board is full (no empty slots)
     if not find:
         return True
-    else:
+    else: # there are empty slots so find_empty(bo) should've returned the row,col for that empty slot
         row, col = find
 
-    for i in range(1,10): # loop through values 1-9
+    # backtracking algorithm
+    for i in range(1,10): # loop through values 1-9 (the numbers to put on board)
         if valid(bo, i, (row,col)): # check if that value is valid
             bo[row][col] = i # num is valid -> insert that value into slot
 
-            if solve(bo):
-                return True
+            # recursion
+            if solve(bo): # function will rerun
+                return True # this will only be accessible if the solve(b0) function returns true and that will only happen if board is full
 
             # backtrack and reset the last element because it is not actually correct
             bo[row][col] = 0
@@ -48,12 +54,16 @@ def valid(bo, num, pos):
             return False; # found that number in column -> so invalid option
 
     # Check the 3x3 square it's in
+    # pos[1] would be the column # integer division by 3 -> possible outcomes are 0-2
     box_x = pos[1] // 3
+    # pos[0] would be the row # integer division by 3 -> possible outcomes are 0-2
     box_y = pos[0] // 3
+    # example: the first box would be (0,0) / second box (0,1)
 
+    # this will go through each slot in that box
     for i in range(box_y * 3, box_y*3 + 3):
             for j in range(box_x * 3, box_x*3 + 3):
-                # Check to see if that num already exists NOT inlcuding the spot it was just inserted in
+                # Check to see if that num already exists NOT including the spot it was just inserted in
                 if bo[i][j] == num and (i,j) != pos:
                     return False # num does exist
 
